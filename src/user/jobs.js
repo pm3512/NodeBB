@@ -13,12 +13,17 @@ const winston = require("winston");
 const cron = require("cron");
 const db = require("../database");
 const meta = require("../meta");
-// The next line calls a function in a module that has not been updated to TS yet
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 const cronJob = cron.CronJob;
 const jobs = {};
 module.exports = function (User) {
     function startDigestJob(name, cronString, term) {
+        // The linter rule disabled here is not related to untyped imports, but I don't think there is a way around it.
+        // cronJob constructor expects () => void as the second argument, but the JS code provides an async
+        // () => Promise<void> function. Afaik, there is no way to convert one to another that would pass the linter.
+        // no-floating-promises rule says that a promise needs to be awaited (impossible in non-async function), chained
+        // with .then or .catch (doesn't get rid of the promise), or ignored with the void operator (which is
+        // disallowed by another rule, no-void). Since there's no way to avoid a linter error, I'm disabling the rule
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         jobs[name] = new cronJob(cronString, (() => __awaiter(this, void 0, void 0, function* () {
             winston.verbose(`[user/jobs] Digest job (${name}) started.`);
             try {

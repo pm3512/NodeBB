@@ -97,6 +97,7 @@
         "nodebb-plugin-dbsearch": "5.1.5",
         "nodebb-plugin-emoji": "4.0.6",
         "nodebb-plugin-emoji-android": "3.0.0",
+        "nodebb-plugin-imgur": "^4.0.1",
         "nodebb-plugin-location-to-map": "^0.1.1",
         "nodebb-plugin-markdown": "10.1.1",
         "nodebb-plugin-mentions": "3.0.12",
@@ -146,10 +147,11 @@
         "zxcvbn": "4.4.2"
     },
     "devDependencies": {
-        "@apidevtools/swagger-parser": "^10.1.0",
+        "@apidevtools/swagger-parser": "10.0.3",
         "@commitlint/cli": "17.3.0",
         "@commitlint/config-angular": "17.3.0",
         "@types/async": "^3.2.16",
+        "@types/cron": "^2.0.0",
         "@types/express": "^4.17.15",
         "@types/lodash": "^4.14.191",
         "@types/nconf": "^0.10.3",
@@ -179,7 +181,7 @@
         "url": "https://github.com/NodeBB/NodeBB/issues"
     },
     "engines": {
-        "node": ">=16"
+        "node": ">=12"
     },
     "maintainers": [
         {
