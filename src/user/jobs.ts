@@ -38,6 +38,8 @@ interface Jobs {
     [key: string]: CronJob
 }
 
+// The next line calls a function in a module that has not been updated to TS yet
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 const cronJob = cron.CronJob as CronJobConstruct;
 
 const jobs: Jobs = {};
@@ -48,6 +50,10 @@ module.exports = function (User: JobUser) {
             winston.verbose(`[user/jobs] Digest job (${name}) started.`);
             try {
                 if (name === 'digest.weekly') {
+                    // The next line calls a function in a module that has not been updated to TS yet
+                    // Disable max length because next disable comment is too long
+                    // eslint-disable-next-line max-len
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
                     const counter = await db.increment('biweeklydigestcounter') as number;
                     if (counter % 2) {
                         await User.digest.execute({ interval: 'biweek' });
