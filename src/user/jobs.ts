@@ -30,6 +30,30 @@ const cronJob = cron.CronJob;
 const jobs: Jobs = {};
 
 module.exports = function (User: JobUser) {
+    User.startJobs = function () {
+        winston.verbose('[user/jobs] (Re-)starting jobs...');
+
+        let { digestHour } = meta.config as { digestHour: number };
+
+        // Fix digest hour if invalid
+        if (isNaN(digestHour)) {
+            digestHour = 17;
+        } else if (digestHour > 23 || digestHour < 0) {
+            digestHour = 0;
+        }
+
+        User.stopJobs();
+
+        startDigestJob('digest.daily', `0 ${digestHour} * * *`, 'day');
+        startDigestJob('digest.weekly', `0 ${digestHour} * * 0`, 'week');
+        startDigestJob('digest.monthly', `0 ${digestHour} 1 * *`, 'month');
+
+        jobs['reset.clean'] = new cronJob('0 0 * * *', User.reset.clean, null, true);
+        winston.verbose('[user/jobs] Starting job (reset.clean)');
+
+        winston.verbose(`[user/jobs] jobs started`);
+    };
+
     function startDigestJob(name: string, cronString: string, term: string) {
         // The linter rule disabled here is not related to untyped imports, but I don't think there is a way around it.
         // cronJob constructor expects () => void as the second argument, but the JS code provides an async
@@ -58,30 +82,6 @@ module.exports = function (User: JobUser) {
         }), null, true);
         winston.verbose(`[user/jobs] Starting job (${name})`);
     }
-
-    User.startJobs = function () {
-        winston.verbose('[user/jobs] (Re-)starting jobs...');
-
-        let { digestHour } = meta.config as { digestHour: number };
-
-        // Fix digest hour if invalid
-        if (isNaN(digestHour)) {
-            digestHour = 17;
-        } else if (digestHour > 23 || digestHour < 0) {
-            digestHour = 0;
-        }
-
-        User.stopJobs();
-
-        startDigestJob('digest.daily', `0 ${digestHour} * * *`, 'day');
-        startDigestJob('digest.weekly', `0 ${digestHour} * * 0`, 'week');
-        startDigestJob('digest.monthly', `0 ${digestHour} 1 * *`, 'month');
-
-        jobs['reset.clean'] = new cronJob('0 0 * * *', User.reset.clean, null, true);
-        winston.verbose('[user/jobs] Starting job (reset.clean)');
-
-        winston.verbose(`[user/jobs] jobs started`);
-    };
 
     User.stopJobs = function () {
         let terminated = 0;
